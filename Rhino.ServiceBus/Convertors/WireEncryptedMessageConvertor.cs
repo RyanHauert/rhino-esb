@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using Rhino.ServiceBus.Internal;
 using Rhino.ServiceBus.Messages;
 using Rhino.ServiceBus.DataStructures;
+using Rhino.ServiceBus.Util;
 
 namespace Rhino.ServiceBus.Convertors
 {
@@ -16,18 +17,23 @@ namespace Rhino.ServiceBus.Convertors
 			EncryptionService = encryptionService;
 		}
 
-		public bool ShouldApplyBehavior(Type type)
+		public bool ShouldApplyOnSerialization(Type type, XElement element)
 		{
-			return wireEncryptedMessageType.IsAssignableFrom(type);
+		    return wireEncryptedMessageType.IsAssignableFrom(type);
 		}
 
-		public XElement ApplyElementBehavior(XElement element)
+	    public bool ShouldApplyOnDeserialization(Type type, XElement element)
+	    {
+	        return element.IsEncrypted();
+	    }
+
+	    public XElement ApplyElementBehavior(XElement element)
 		{
 			var encryptedValue = EncryptionService.Encrypt(element.ToString());
 			var replacement = new XElement(element.Name,
 				new XElement(XName.Get("Value", "string"),
-				new XAttribute("iv", encryptedValue.Base64Iv),
-				encryptedValue.EncryptedBase64Value
+                    new XAttribute("iv", encryptedValue.Base64Iv),
+                    encryptedValue.EncryptedBase64Value
 				));
 			return replacement;
 		}

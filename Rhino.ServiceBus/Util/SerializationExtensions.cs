@@ -1,5 +1,6 @@
 using System.Collections.Specialized;
 using System.IO;
+using System.Xml.Linq;
 
 namespace Rhino.ServiceBus.Util
 {
@@ -8,7 +9,7 @@ namespace Rhino.ServiceBus.Util
         public static byte[] SerializeHeaders(this NameValueCollection headers)
         {
             using (var ms = new MemoryStream())
-            using(var binaryWriter = new BinaryWriter(ms))
+            using (var binaryWriter = new BinaryWriter(ms))
             {
                 binaryWriter.Write(headers.Count);
                 foreach (var key in headers.AllKeys)
@@ -36,6 +37,12 @@ namespace Rhino.ServiceBus.Util
                 }
             }
             return headers;
+        }
+
+        public static bool IsEncrypted(this XElement element)
+        {
+            var valueElement = element.Element(XName.Get("Value", "string"));
+            return valueElement != null && valueElement.Attribute("iv") != null;
         }
     }
 }

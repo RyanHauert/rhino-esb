@@ -187,7 +187,7 @@ namespace Rhino.ServiceBus.Serializers
 		{
 			foreach (var afterSerializedBehavior in elementSerializationBehaviors)
 			{
-				if (afterSerializedBehavior.ShouldApplyBehavior(messageType))
+				if (afterSerializedBehavior.ShouldApplyOnSerialization(messageType, element))
 					return afterSerializedBehavior.ApplyElementBehavior(element);
 			}
 			return element;
@@ -197,7 +197,7 @@ namespace Rhino.ServiceBus.Serializers
 		{
 			foreach (var afterSerializedBehavior in elementSerializationBehaviors)
 			{
-				if (afterSerializedBehavior.ShouldApplyBehavior(messageType))
+				if (afterSerializedBehavior.ShouldApplyOnDeserialization(messageType, element))
 					return afterSerializedBehavior.RemoveElementBehavior(element);
 			}
 			return element;
